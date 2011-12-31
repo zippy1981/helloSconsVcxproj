@@ -8,6 +8,7 @@ env = Environment()  # Initialize the environment
 #             print "construction variable = '%s', value = '%s'" % item
 
 helloSrc = ["hello.cpp"]
+helloCSrc = ["helloC.c"]
 helloIncs = []
 helloLocalIncs = []
 helloResources = []
@@ -15,6 +16,7 @@ helloResources = []
 helloMisc = []
 
 helloExe = env.Program(target = 'hello', source = helloSrc)
+helloCExe = env.Program(target = 'helloC', source = helloCSrc)
 
 helloVcxproj = env.MSVSProject(target = 'hello' + env['MSVSPROJECTSUFFIX'],
                 srcs = helloSrc,
@@ -25,9 +27,16 @@ helloVcxproj = env.MSVSProject(target = 'hello' + env['MSVSPROJECTSUFFIX'],
                 buildtarget = helloExe,
                 variant = 'Release'
 )
-defaultTargets = [ helloExe ]
+
+helloCVcxproj = env.MSVSProject(target = 'helloC' + env['MSVSPROJECTSUFFIX'],
+                srcs = helloCSrc,
+                buildtarget = helloCExe,
+                variant = 'Release'
+)
+
+defaultTargets = [ helloExe, helloCExe ]
 
 if os.sys.platform == "win32":
-    defaultTargets += [ helloVcxproj ]
+    defaultTargets += [ helloVcxproj, helloCVcxproj ]
 
 env.Default( defaultTargets )
