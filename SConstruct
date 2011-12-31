@@ -18,6 +18,8 @@ helloMisc = []
 helloExe = env.Program(target = 'hello', source = helloSrc)
 helloCExe = env.Program(target = 'helloC', source = helloCSrc)
 
+defaultTargets = [ helloExe, helloCExe ]
+
 helloVcxproj = env.MSVSProject(target = 'hello' + env['MSVSPROJECTSUFFIX'],
                 srcs = helloSrc,
 #                incs = helloIncs,
@@ -25,18 +27,23 @@ helloVcxproj = env.MSVSProject(target = 'hello' + env['MSVSPROJECTSUFFIX'],
 #                resources = helloResources,
 #                misc = helloMisc,
                 buildtarget = helloExe,
-                variant = 'Release'
+                variant = 'Debug',
+                auto_build_solution=0
 )
 
 helloCVcxproj = env.MSVSProject(target = 'helloC' + env['MSVSPROJECTSUFFIX'],
                 srcs = helloCSrc,
                 buildtarget = helloCExe,
-                variant = 'Release'
+                variant = 'Debug',
+                auto_build_solution=0
 )
-
-defaultTargets = [ helloExe, helloCExe ]
+vcprojTargets = [ helloVcxproj, helloCVcxproj ]
 
 if os.sys.platform == "win32":
-    defaultTargets += [ helloVcxproj, helloCVcxproj ]
+    slnTarget = env.MSVSSolution(target = 'hello' + env['MSVSSOLUTIONSUFFIX'],
+      projects = vcprojTargets,
+      variant = 'Debug'
+    )
+    defaultTargets += vcprojTargets + [ slnTarget ]
 
 env.Default( defaultTargets )
